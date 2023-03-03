@@ -11,6 +11,11 @@ const cors = require('cors');
 app.use(cors())
 app.use(express.json())
 
+app.use((req, res, next) => {
+    res.setHeader('Content-Security-Policy', "default-src 'none'; style-src 'self' https://fonts.googleapis.com/");
+    next();
+});
+
 // verify token
 const verifyJWT = (req, res, next) => {
     const email = req.query.email;

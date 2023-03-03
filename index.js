@@ -11,6 +11,7 @@ const cors = require('cors');
 app.use(cors())
 app.use(express.json())
 
+// modify the CSP
 app.use((req, res, next) => {
     res.setHeader('Content-Security-Policy', "default-src 'none'; style-src 'self' https://fonts.googleapis.com/");
     next();

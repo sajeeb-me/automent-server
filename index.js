@@ -1,21 +1,17 @@
 const express = require('express');
+const cors = require('cors');
 var jwt = require('jsonwebtoken');
+// const ObjectId  = require('mongodb');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const app = express();
 const port = process.env.PORT || 5000;
-const cors = require('cors');
 
 
 //middleWare
 app.use(cors())
 app.use(express.json())
 
-// modify the CSP
-app.use((req, res, next) => {
-    res.setHeader('Content-Security-Policy', "default-src 'none'; style-src 'self' https://fonts.googleapis.com/");
-    next();
-});
 
 // verify token
 const verifyJWT = (req, res, next) => {
@@ -44,7 +40,7 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 async function run() {
     try {
-        await client.connect();
+        client.connect();
         const itemCollection = client.db("autoMent").collection("items");
 
         // GET Items
@@ -82,7 +78,7 @@ async function run() {
         })
         app.get('/items/:id', async (req, res) => {
             const id = req.params.id;
-            const query = { _id: ObjectId(id) };
+            const query = { _id: new ObjectId(id) };
             const item = await itemCollection.findOne(query)
             res.send(item)
         })
@@ -104,7 +100,7 @@ async function run() {
         // PUT data
         app.put('/items/:id', async (req, res) => {
             const id = req.params.id;
-            const filter = { _id: ObjectId(id) };
+            const filter = { _id: new ObjectId(id) };
             const updatedBody = req.body;
             const options = { upsert: true }
             const updateDoc = {
@@ -117,7 +113,7 @@ async function run() {
         // DELETE data
         app.delete('/items/:id', async (req, res) => {
             const id = req.params.id;
-            const query = { _id: ObjectId(id) }
+            const query = { _id: new ObjectId(id) }
             const item = await itemCollection.deleteOne(query)
             res.send(item)
         })
